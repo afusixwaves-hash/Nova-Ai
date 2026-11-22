@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#100b20">
+  <meta name="description" content="Nova-Ai — your intelligent AI companion">
+  <title>Nova-Ai | Your AI Companion</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
+    :root{color-scheme:dark;--bg:#0b0714;--panel:rgba(31,21,52,.72);--line:rgba(204,174,255,.16);--purple:#a879ff;--pink:#f0a5ff;--muted:#a99dbb}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 15% 5%,#39205f 0,transparent 38%),radial-gradient(ellipse at 90% 85%,#28154b 0,transparent 35%),var(--bg);color:#f8f4ff;font-family:'DM Sans',sans-serif}
+    button,textarea{font:inherit}
+    .shell{max-width:1050px;margin:auto;padding:22px 18px 28px;min-height:100vh;display:flex;flex-direction:column}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:22px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:44px;height:44px;border-radius:15px;background:linear-gradient(135deg,#b98aff,#7d4bdb 60%,#f0a5ff);display:grid;place-items:center;box-shadow:0 8px 30px #9b62ff55;font-size:23px}
+    h1{font:700 22px 'Space Grotesk',sans-serif;margin:0;letter-spacing:-.6px}
+    .tag{font-size:11px;color:#cbbbe5;letter-spacing:1.7px;text-transform:uppercase;margin-top:2px}
+    .status{border:1px solid var(--line);border-radius:99px;padding:8px 12px;color:#cbbbe5;font-size:12px;background:#ffffff08}
+    .status:before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:#78e6bd;margin-right:7px;box-shadow:0 0 10px #78e6bd}
+    .layout{display:grid;grid-template-columns:220px 1fr;gap:16px;flex:1;min-height:0}
+    .side,.chat{border:1px solid var(--line);background:var(--panel);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border-radius:24px;box-shadow:0 18px 60px #0003}
+    .side{padding:18px}
+    .side h3{font:600 12px 'Space Grotesk';color:#9e8db9;letter-spacing:1.6px;text-transform:uppercase;margin:5px 0 14px}
+    .mode{width:100%;border:1px solid transparent;background:transparent;color:#c9bddb;padding:13px 12px;border-radius:13px;text-align:left;margin:4px 0;cursor:pointer}
+    .mode.active,.mode:hover{background:#a879ff20;border-color:#b98aff3b;color:#fff}
+    .mode span{margin-right:9px}
+    .tip{font-size:12px;color:#9587a8;line-height:1.6;margin-top:28px}
+    .chat{display:flex;flex-direction:column;overflow:hidden;min-height:600px}
+    .chat-top{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+    .chat-top strong{font:600 15px 'Space Grotesk'}
+    .chat-top small{color:var(--muted)}
+    #messages{padding:22px;flex:1;overflow:auto;display:flex;flex-direction:column;gap:16px;min-height:300px;max-height:calc(100vh - 290px)}
+    .welcome{margin:auto;text-align:center;max-width:480px;padding:30px 10px}
+    .orb{width:74px;height:74px;border-radius:25px;margin:0 auto 20px;background:linear-gradient(135deg,#c69aff,#7544d0);display:grid;place-items:center;font-size:34px;box-shadow:0 0 55px #a879ff55}
+    .welcome h2{font:600 25px 'Space Grotesk';margin:0 0 10px}
+    .welcome p{color:var(--muted);line-height:1.6;margin:0}
+    .suggestions{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:22px}
+    .suggestions button{border:1px solid var(--line);background:#ffffff08;color:#d9cbed;border-radius:99px;padding:9px 12px;font-size:12px;cursor:pointer}
+    .msg{max-width:85%;display:flex;flex-direction:column;gap:6px}
+    .msg.user{align-self:flex-end;align-items:flex-end}
+    .msg.assistant{align-self:flex-start}
+    .bubble{padding:12px 15px;border-radius:17px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}
+    .user .bubble{background:linear-gradient(135deg,#8d5de0,#6740b1);border-bottom-right-radius:5px}
+    .assistant .bubble{background:#ffffff0b;border:1px solid var(--line);border-bottom-left-radius:5px}
+    .msg small{font-size:10px;color:#8f81a3}
+    .msg img{max-width:100%;border-radius:14px;border:1px solid var(--line)}
+    .composer{padding:15px 17px 17px;border-top:1px solid var(--line);background:#0c0816aa}
+    .tools{display:flex;gap:8px;align-items:center;margin-bottom:10px}
+    .tool{border:1px solid var(--line);background:#ffffff08;color:#cbbbe5;border-radius:10px;padding:7px 11px;font-size:12px;cursor:pointer}
+    .tool.active{background:#a879ff2c;color:white;border-color:#b98aff77}
+    .inputrow{display:flex;gap:10px;align-items:flex-end;background:#ffffff0b;border:1px solid #c8a6ff38;border-radius:17px;padding:9px}
+    textarea{flex:1;resize:none;min-height:42px;max-height:130px;border:0;outline:0;background:transparent;color:white;padding:10px 7px}
+    textarea::placeholder{color:#8e819f}
+    .send{width:44px;height:44px;border:0;border-radius:13px;background:linear-gradient(135deg,#bd91ff,#8152d9);color:white;font-size:18px;cursor:pointer}
+    .send:disabled{opacity:.5;cursor:wait}
+    .foot{text-align:center;color:#716680;font-size:10px;margin-top:10px}
+    .typing{color:#b99be8;font-size:12px;padding:0 5px}
+    .image-result{max-width:min(100%,520px)!important}
+    @media(max-width:700px){.shell{padding:14px 10px}.layout{grid-template-columns:1fr}.side{padding:10px;display:flex;align-items:center;gap:7px;overflow:auto}.side h3,.tip{display:none}.mode{white-space:nowrap;width:auto;margin:0;padding:10px}.chat{min-height:65vh}.chat-top{padding:14px 16px}#messages{padding:16px;max-height:55vh}.msg{max-width:94%}.status{font-size:10px;padding:7px 9px}}
+  </style>
+</head>
+<body>
+<div class="shell">
+  <header>
+    <div class="brand"><div class="logo">✦</div><div><h1>Nova-Ai</h1><div class="tag">Your intelligent companion</div></div></div>
+    <div class="status">SYSTEM ONLINE</div>
+  </header>
+  <main class="layout">
+    <aside class="side">
+      <h3>Workspace</h3>
+      <button class="mode active" id="chatMode"><span>✧</span> AI Chat</button>
+      <button class="mode" id="imageMode"><span>◈</span> Create Image</button>
+      <button class="mode" id="voiceMode"><span>♫</span> Voice input</button>
+      <div class="tip">Nova-Ai can answer questions, help you create ideas and generate images from your prompts.</div>
+    </aside>
+    <section class="chat">
+      <div class="chat-top"><strong id="modeTitle">Nova-Ai Chat</strong><small id="modeHint">Powered by OpenAI</small></div>
+      <div id="messages" aria-live="polite">
+        <div class="welcome" id="welcome">
+          <div class="orb">✦</div><h2>What can I help you with?</h2>
+          <p>Your ideas, questions and creativity — all in one place.</p>
+          <div class="suggestions">
+            <button data-prompt="Explain black holes in simple words">Explain black holes</button>
+            <button data-prompt="Give me 5 creative YouTube Shorts ideas">YouTube ideas</button>
+            <button data-prompt="Write a short story in Roman Urdu">Write a story</button>
+          </div>
+        </div>
+      </div>
+      <div class="composer">
+        <div class="tools">
+          <button class="tool active" id="textTool">✧ Chat</button>
+          <button class="tool" id="imageTool">◈ Image</button>
+          <button class="tool" id="micTool">🎙 Voice</button>
+          <button class="tool" id="speakTool" title="Read replies aloud">🔊 Read replies: Off</button>
+        </div>
+        <div class="inputrow">
+          <textarea id="prompt" rows="1" placeholder="Message Nova-Ai..."></textarea>
+          <button class="send" id="send" aria-label="Send">➤</button>
+        </div>
+        <div class="foot">AI can make mistakes. Check important information. API usage may incur charges.</div>
+      </div>
+    </section>
+  </main>
+</div>
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const messages = $("messages"), promptBox = $("prompt"), send = $("send");
+  let mode = "chat", history = [], speakReplies = false, busy = false;
+
+  function addMessage(role, text, imageUrl) {
+    $("welcome")?.remove();
+    const wrap = document.createElement("div");
+    wrap.className = `msg ${role}`;
+    const bubble = document.createElement("div");
+    bubble.className = "bubble";
+    if (text) bubble.textContent = text;
+    wrap.appendChild(bubble);
+    if (imageUrl) {
+      const img = document.createElement("img");
+      img.className = "image-result";
+      img.src = imageUrl;
+      img.alt = "Image generated by Nova-Ai";
+      wrap.appendChild(img);
+      const link = document.createElement("a");
+      link.href = imageUrl; link.download = "nova-ai-image.png";
+      link.textContent = "Download image";
+      link.style.color = "#d7b9ff"; link.style.fontSize = "12px";
+      wrap.appendChild(link);
+    }
+    const time = document.createElement("small");
+    time.textContent = role === "user" ? "YOU" : "NOVA-AI";
+    wrap.appendChild(time);
+    messages.appendChild(wrap);
+    messages.scrollTop = messages.scrollHeight;
+    if (role === "assistant" && text && speakReplies) speak(text);
+  }
+
+  function setMode(next) {
+    mode = next;
+    $("chatMode").classList.toggle("active", next === "chat");
+    $("imageMode").classList.toggle("active", next === "image");
+    $("voiceMode").classList.toggle("active", next === "voice");
+    $("textTool").classList.toggle("active", next === "chat");
+    $("imageTool").classList.toggle("active", next === "image");
+    $("modeTitle").textContent = next === "image" ? "Image Studio" : next === "voice" ? "Voice Input" : "Nova-Ai Chat";
+    $("modeHint").textContent = next === "image" ? "Describe your imagination" : "Powered by OpenAI";
+    promptBox.placeholder = next === "image" ? "Describe the image you want to create..." : "Message Nova-Ai...";
+    if (next === "voice") startListening();
+  }
+  $("chatMode").onclick = () => setMode("chat");
+  $("imageMode").onclick = () => setMode("image");
+  $("voiceMode").onclick = () => setMode("voice");
+  $("textTool").onclick = () => setMode("chat");
+  $("imageTool").onclick = () => setMode("image");
+  $("micTool").onclick = startListening;
+  $("speakTool").onclick = () => {
+    speakReplies = !speakReplies;
+    $("speakTool").textContent = speakReplies ? "🔊 Read replies: On" : "🔊 Read replies: Off";
+    $("speakTool").classList.toggle("active", speakReplies);
+  };
+  document.querySelectorAll("[data-prompt]").forEach(btn => btn.onclick = () => {
+    promptBox.value = btn.dataset.prompt; promptBox.focus();
+  });
+
+  function speak(text) {
+    if (!("speechSynthesis" in window)) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "en-US";
+    window.speechSynthesis.speak(utterance);
+  }
+
+  function startListening() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      addMessage("assistant", "Voice input is not supported in this browser. Try Chrome on Android, allow microphone permission, or type your message.");
+      return;
+    }
+    const recognition = new SpeechRecognition();
+    recognition.lang = "ur-PK";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    $("micTool").classList.add("active");
+    recognition.onresult = (event) => {
+      promptBox.value = event.results[0][0].transcript;
+      promptBox.focus();
+      setMode("chat");
+    };
+    recognition.onerror = () => addMessage("assistant", "Microphone error. Please allow microphone access and try again.");
+    recognition.onend = () => $("micTool").classList.remove("active");
+    try { recognition.start(); } catch { $("micTool").classList.remove("active"); }
+  }
+
+  async function submit() {
+    const text = promptBox.value.trim();
+    if (!text || busy) return;
+    promptBox.value = "";
+    addMessage("user", text);
+    busy = true; send.disabled = true;
+    const typing = document.createElement("div");
+    typing.className = "typing"; typing.textContent = mode === "image" ? "Creating your image..." : "Nova-Ai is thinking...";
+    messages.appendChild(typing); messages.scrollTop = messages.scrollHeight;
+    try {
+      if (mode === "image") {
+        const response = await fetch("/api/image", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt: text })
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Image generation failed.");
+        typing.remove();
+        addMessage("assistant", "Your image is ready ✨", data.image);
+      } else {
+        const response = await fetch("/api/chat", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: text, history })
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Chat request failed.");
+        history.push({ role: "user", content: text }, { role: "assistant", content: data.reply });
+        history = history.slice(-12);
+        typing.remove();
+        addMessage("assistant", data.reply);
+      }
+    } catch (error) {
+      typing.remove();
+      addMessage("assistant", error.message || "Something went wrong. Please try again.");
+    } finally {
+      busy = false; send.disabled = false; promptBox.focus();
+    }
+  }
+  send.onclick = submit;
+  promptBox.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); submit(); }
+  });
+  promptBox.addEventListener("input", () => {
+    promptBox.style.height = "auto";
+    promptBox.style.height = Math.min(promptBox.scrollHeight, 130) + "px";
+  });
+})();
+</script>
+</body>
+</html>
